@@ -37,8 +37,8 @@ This project analyzes the [Seoul Bike Sharing Demand dataset](http://archive.ics
 
 ```bash
 # Clone the repo
-git clone https://github.com/ShibilAhamed701212/super.git
-cd super
+git clone https://github.com/ShibilAhamed701212/bike-rental-regression-analysis.git
+cd bike-rental-regression-analysis
 
 # Install dependencies
 pip install pandas numpy matplotlib seaborn scikit-learn tensorflow imbalanced-learn
