@@ -122,6 +122,6 @@ There are no unit tests; the notebook itself is the test. GitHub Actions runs on
 
 ## License
 
-No license file is included; the code is shared for educational purposes. The dataset is from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand) ; see that page for its license terms.
+No license file is included; the code is shared for educational purposes. The dataset is from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand); see that page for its license terms.
 
 Citation: Dua, D. and Graff, C. (2019). UCI Machine Learning Repository. Irvine, CA: University of California, School of Information and Computer Science.
