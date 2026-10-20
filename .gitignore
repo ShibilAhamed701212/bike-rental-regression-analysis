@@ -24,3 +24,6 @@ Thumbs.db
 
 # Agents
 .agents/
+
+# Tooling caches
+.ruff_cache/
