@@ -6,7 +6,7 @@ A Jupyter notebook that predicts how many bikes are rented at noon in Seoul from
 
 ## Overview
 
-The [Seoul Bike Sharing Demand dataset](https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand) (UCI Machine Learning Repository) records the hourly count of rented public bikes in Seoul from 1 Dec 2017 to 30 Nov 2018, with weather readings for each hour. The notebook keeps only the 12:00 record of each day (365 rows) and asks how well weather explains noon demand.
+The [Seoul Bike Sharing Demand dataset](https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand) (UCI Machine Learning Repository) records the hourly count of rented public bikes in Seoul from 1 Dec 2017 to 30 Nov 2018, with weather readings for each hour. The notebook keeps only the 12:00 record of each day on which the rental system was operating (353 of 365 days) and asks how well weather explains noon demand.
 
 ## Dataset
 
@@ -19,7 +19,7 @@ The [Seoul Bike Sharing Demand dataset](https://archive.ics.uci.edu/dataset/560/
 
 `fcc_bikes_regression.ipynb` runs top to bottom in this order:
 
-1. **Load and clean.** Read the CSV, drop `Date`, `Holiday` and `Seasons`, rename the columns, encode `Functioning Day` as 0/1 and keep only the noon hour.
+1. **Load and clean.** Read the CSV, drop `Date`, `Holiday` and `Seasons`, rename the columns, encode `Functioning Day` as 0/1, keep only the noon hour, and drop the 12 days the rental system was not operating (they always record 0 rentals, whatever the weather).
 2. **Explore.** Scatter plot of every feature against noon bike count.
 3. **Select features.** Drop `wind`, `visibility` and `functional`.
 4. **Split.** Shuffled 60/20/20 train/validation/test split with a fixed seed (`SEED = 42`), so the split and results are reproducible.
@@ -33,15 +33,15 @@ The [Seoul Bike Sharing Demand dataset](https://archive.ics.uci.edu/dataset/560/
 
 ## Results
 
-Numbers below come from executing the notebook in this repository (seed 42, TensorFlow 2.21 on CPU). The test set is only 73 days, so the scores move noticeably with a different split.
+Numbers below come from executing the notebook in this repository (seed 42, TensorFlow 2.21 on CPU). The test set is only 71 days, so the scores move noticeably with a different split.
 
 | Model (test set) | R² | MSE |
 | --- | --- | --- |
-| Linear regression, temperature only | 0.17 | — |
-| Multiple linear regression, 6 features | 0.46 | 105,290 |
-| Neural network, 6 features | — | 136,243 |
+| Linear regression, temperature only | 0.31 | — |
+| Multiple linear regression, 6 features | 0.54 | 76,313 |
+| Neural network, 6 features | — | 109,987 |
 
-On this split the neural network does **not** beat multiple linear regression: its test MSE is about 29% higher.
+On this split the neural network does **not** beat multiple linear regression: its test MSE is about 44% higher.
 
 Temperature-only linear fit on the training data:
 
@@ -111,11 +111,11 @@ There are no unit tests; the notebook itself is the test. GitHub Actions runs on
 - **Results were not reproducible.** Splits and network initialisation were unseeded; a fixed seed is now set.
 - **Keras 3 deprecation.** `input_shape=` on the `Normalization` layers is replaced with an explicit `tf.keras.Input`.
 - **README results were out of date.** The earlier README quoted R² ≈ 0.41 for the temperature model and said the neural networks improved on the baseline; neither held when the notebook was re-run, so the results above replace them.
+- **Non-operating days were treated as zero demand.** 12 noon rows come from days the rental system was closed (`Functioning Day = No`) and all record 0 rentals. They are now removed before modeling; with them gone, every score improved (temperature-only R² 0.17 → 0.31, multiple regression R² 0.46 → 0.54).
 
 ## Known Limitations
 
-- **Non-operating days are treated as zero demand.** 12 of the 365 noon rows are days when the bike system was not operating (`Functioning Day = No`), and all of them have a count of 0. The notebook drops the `functional` column without removing those rows, so the models are asked to predict zeros the weather cannot explain. Filtering them out would likely improve every score; it was left unchanged here to keep the original analysis intact.
-- **Small test set.** 73 test days make R² and MSE sensitive to the random split. Cross-validation would give a steadier estimate.
+- **Small test set.** 71 test days make R² and MSE sensitive to the random split. Cross-validation would give a steadier estimate.
 - **Validation set is only used for neural-network loss curves**, not for model selection or tuning.
 - **Noon only.** The other 23 hours of each day are discarded.
 - Exact neural-network numbers can vary slightly across TensorFlow versions and hardware even with the fixed seed.
